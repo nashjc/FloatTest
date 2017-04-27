@@ -4,6 +4,7 @@ TODOS
 
 2017-04-27
    o uploaded to Github. Some edits from RMH notes.
+   o Attempt to use ssh keys.
 
 2017-04-25
    o Initial package setup -- no tests yet
