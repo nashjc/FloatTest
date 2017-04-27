@@ -1,0 +1,16 @@
+Package: floattest
+Type: Package
+Title: Tests for Floating Point Properties in R Approach for Function Minimization
+Version: 2017-4.25
+Date: 2017-04-25
+Authors@R: c( person(given = c("John", "C"), family = "Nash", 
+              role = c("aut", "cre"), email = "nashjc@uottawa.ca"), 
+            	person(given = c("Richard", "M."), family ="Heiberger", 
+              role = c("aut"), email = "rmh@temple.edu") ) 
+Maintainer: John C. Nash <nashjc@uottawa.ca>
+Description: Implements tests of floating point properties of operations and
+    functins in R, mainly as tests and documents.
+LazyLoad: Yes
+License: GPL (>= 2)
+NeedsCompilation: no
+VignetteBuilder: knitr
