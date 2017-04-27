@@ -3,12 +3,11 @@
 # arrays: P contains counts
 #         T contains sum
 #         S contains squares
-showstack(k)
 
 # ?? seems stack is not being passed around
 
   pairvar <- function(datasource){
-     maxdepth <- 100 # maximum depth of stack -- handles more than 2^maxdepth observations
+     maxdepth <- 8 # maximum depth of stack -- handles more than 2^maxdepth observations
      datapointer <<- 0 # global. Points to next data pointer. Set negative at end.
      # Note: R does not have long integers, so we could have trouble with very large datasets.
      # Using double can get to 4e15 points, however.
@@ -18,6 +17,7 @@ showstack(k)
 
      showstack <- function(k){
         cat("showstack k=",k,"\n")
+        print(P)
         cat("   P             T            S\n")
         for (i in 1:k){
             cat("i =", i,"\n")
@@ -36,11 +36,13 @@ showstack(k)
        } else {
           x <- datasource[datapointer]
        } 
+       cat("getdatapoint x=",x,"\n")
        x
      }
 
      combform <- function(k){
        cat("in combform, k=",k,"\n")
+       print(P)
        nn <- P[k]
        mm <- P[k-1]
        P[k-1] <- nn + mm   
@@ -56,6 +58,7 @@ showstack(k)
      
      stackcombine <- function(k) { # assume k is OK from above
        cat("in stackcombine, k=",k,"\n")
+       print(P)
        while ( (k > 1) && (P[k] == P[k-1])) {
           cat("k=",k," combform called\n")
           k <- combform(k)
@@ -82,6 +85,7 @@ showstack(k)
       T[2] <- x
     }
     cat("after first 2 points\n")
+    print(P)
     showstack(k)
     k <- stackcombine(k)
     cat("datapointer = ",datapointer,"  stackpointer=",k,"\n")
@@ -89,6 +93,7 @@ showstack(k)
     repeat {
        x <- getdatapoint(datasource)
        cat("datapointer = ",datapointer,"\n")
+       print(P)
        if (is.na(x)) { break }
        k <- k+1
        cat("k=",k," after new data\n")
