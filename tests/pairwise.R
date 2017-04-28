@@ -12,20 +12,27 @@
      # Note: R does not have long integers, so we could have trouble with very large datasets.
      # Using double can get to 4e15 points, however.
      # actualy sum(i=0:(maxdepth-1)){2^i}
-     P <- T <- S <- rep(0,maxdepth) # set up stacks
+     S <<- rep(0,maxdepth) # set up stacks
+     T <<- rep(0,maxdepth) # set up stacks
+     P <<- rep(0,maxdepth) # set up stacks
+     k<-maxdepth
+
+     showstack <- function(){
+       #  cat("showstack k=",k,"\n")
+       #  print(P)
+       cat(" P  \t T    \t      S    for k=",k,"\n")
+       for (i in 1:k){
+         #   cat("i =", i,"\n")
+         cat(P[i],"\t ",T[i],"   \t ",S[i],"\n")
+       }
+       cat("============================================\n")
+       return(1)
+     }     
+
+     showstack()
+     
      k <- 0 # stack depth
 
-     showstack <- function(k){
-        cat("showstack k=",k,"\n")
-        print(P)
-        cat("   P             T            S\n")
-        for (i in 1:k){
-            cat("i =", i,"\n")
-            cat(P[i]," ",T[i]," ",S[i],"\n")
-        }
-        cat("============================================\n")
-        return(1)
-     }     
      
      getdatapoint <- function(datasource){
      # get next data value -- do we need a global??
@@ -40,32 +47,28 @@
        x
      }
 
-     combform <- function(k){
-       cat("in combform, k=",k,"\n")
-       print(P)
+     combform <- function(){
+       cat("cf1\n")
+       showstack()
+       #print(P)
        nn <- P[k]
        mm <- P[k-1]
        P[k-1] <- nn + mm   
        T1 <- nn * T[k-1]/mm - T[k]
        T2 <- mm*T1*T1/(nn*(mm + nn))
+       cat("nn, mm, T1, T2:", nn, mm, T1, T2,"\n")
        S[k-1] <- S[k-1] + S[k] + T2
        T[k-1] <- T[k-1] + T[k]
+       cat("T, S for k-1: ",T[k-1],S[k-1],"\n")
+       cat("cf2\n")
        # Note could zero the level k entries
        P[k] <- T[k] <- S[k] <- 0 # not absolutely necessary
+       print(P)
+       print(T)
+       showstack()
        k <- k - 1
-       k
      }
      
-     stackcombine <- function(k) { # assume k is OK from above
-       cat("in stackcombine, k=",k,"\n")
-       print(P)
-       while ( (k > 1) && (P[k] == P[k-1])) {
-          cat("k=",k," combform called\n")
-          k <- combform(k)
-        }
-        k
-     }
-    
     cat("start of work with datasource\n") 
     cat("datapointer = ",datapointer,"\n")
     x  <- getdatapoint(datasource) 
@@ -84,31 +87,39 @@
       P[2] <- 1
       T[2] <- x
     }
-    cat("after first 2 points\n")
-    print(P)
-    showstack(k)
-    k <- stackcombine(k)
-    cat("datapointer = ",datapointer,"  stackpointer=",k,"\n")
-    showstack(k)
+    #print(P)
+    #print(T)
+    showstack()
+    tmp <- readline("after first 2 points\n")
+    k <- combform()
+    showstack()
+    tmp <- readline("about to repeat")
     repeat {
        x <- getdatapoint(datasource)
        cat("datapointer = ",datapointer,"\n")
-       print(P)
+     #  print(P)
        if (is.na(x)) { break }
        k <- k+1
        cat("k=",k," after new data\n")
-       
-       P[k] <- 1
-       T[k] <- x 
-       S[k] <- 0 # in case left non-zero
-       # combine if equal
-       k <- stackcombine(k)
-       showstack(k)
-       tmp <- readline("continue?")
+       if (k <= maxdepth) {
+         P[k] <- 1
+         T[k] <- x 
+         S[k] <- 0 # in case left non-zero
+         # combine if equal
+         while ( (k>1) && (P(k-1)==P(k)) ) {
+            combform()
+            cat ("wcf")
+            showstack()
+            tmp <- readline("continue?")
+         }
+       } else { stop("Stack overflow")}
     }
     # Force collapse of stack now data finished
     while (k > 1) {
-       stackcombine(k)
+       cat("fcf")
+       k<-combform()
+       showstack()
+       tmp <- readline("cont. collapse")
     }
     mean <- T[1]/P[1]
     variance <- S[1]/(P[1] - 1)
