@@ -6,18 +6,17 @@
 
 # ?? seems stack is not being passed around
 
-  pairvar <- function(datasource){
+pairvar <- function(datasource){
      maxdepth <- 8 # maximum depth of stack -- handles more than 2^maxdepth observations
      datapointer <<- 0 # global. Points to next data pointer. Set negative at end.
      # Note: R does not have long integers, so we could have trouble with very large datasets.
      # Using double can get to 4e15 points, however.
      # actualy sum(i=0:(maxdepth-1)){2^i}
-     S <<- rep(0,maxdepth) # set up stacks
-     T <<- rep(0,maxdepth) # set up stacks
-     P <<- rep(0,maxdepth) # set up stacks
+     S <- rep(0,maxdepth) # set up stacks
+     T <- rep(0,maxdepth) # set up stacks
+     P <- rep(0,maxdepth) # set up stacks
      k<-maxdepth
-
-     showstack <- function(){
+     showstack <- function(k, P, T, S){
        #  cat("showstack k=",k,"\n")
        #  print(P)
        cat(" P  \t T    \t      S    for k=",k,"\n")
@@ -29,11 +28,10 @@
        return(1)
      }     
 
-     showstack()
+     showstack(k, P, T, S)
      
      k <- 0 # stack depth
 
-     
      getdatapoint <- function(datasource){
      # get next data value -- do we need a global??
        datapointer <<- datapointer + 1
@@ -47,28 +45,6 @@
        x
      }
 
-     combform <- function(){
-       cat("cf1\n")
-       showstack()
-       #print(P)
-       nn <- P[k]
-       mm <- P[k-1]
-       P[k-1] <- nn + mm   
-       T1 <- nn * T[k-1]/mm - T[k]
-       T2 <- mm*T1*T1/(nn*(mm + nn))
-       cat("nn, mm, T1, T2:", nn, mm, T1, T2,"\n")
-       S[k-1] <- S[k-1] + S[k] + T2
-       T[k-1] <- T[k-1] + T[k]
-       cat("T, S for k-1: ",T[k-1],S[k-1],"\n")
-       cat("cf2\n")
-       # Note could zero the level k entries
-       P[k] <- T[k] <- S[k] <- 0 # not absolutely necessary
-       print(P)
-       print(T)
-       showstack()
-       k <- k - 1
-     }
-     
     cat("start of work with datasource\n") 
     cat("datapointer = ",datapointer,"\n")
     x  <- getdatapoint(datasource) 
@@ -87,13 +63,21 @@
       P[2] <- 1
       T[2] <- x
     }
-    #print(P)
-    #print(T)
-    showstack()
-    tmp <- readline("after first 2 points\n")
-    k <- combform()
-    showstack()
-    tmp <- readline("about to repeat")
+    showstack(k, P, T, S)
+    nn <- P[k]
+    mm <- P[k-1]
+    P[k-1] <- nn + mm   
+    T1 <- nn * T[k-1]/mm - T[k]
+    T2 <- mm*T1*T1/(nn*(mm + nn))
+    cat("nn, mm, T1, T2:", nn, mm, T1, T2,"\n")
+    S[k-1] <- S[k-1] + S[k] + T2
+    T[k-1] <- T[k-1] + T[k]
+    cat("T, S for k-1: ",T[k-1],S[k-1],"\n")
+    # Note could zero the level k entries
+    P[k] <- T[k] <- S[k] <- 0 # not absolutely necessary
+    k <- k - 1
+    showstack(k, P, T, S)
+    tmp <- readline("above after first 2 points\n")
     repeat {
        x <- getdatapoint(datasource)
        cat("datapointer = ",datapointer,"\n")
@@ -106,20 +90,40 @@
          T[k] <- x 
          S[k] <- 0 # in case left non-zero
          # combine if equal
-         while ( (k>1) && (P(k-1)==P(k)) ) {
-            combform()
-            cat ("wcf")
-            showstack()
-            tmp <- readline("continue?")
+         while ( (k>1) && (P[k-1]==P[k]) ) {
+           nn <- P[k]
+           mm <- P[k-1]
+           P[k-1] <- nn + mm   
+           T1 <- nn * T[k-1]/mm - T[k]
+           T2 <- mm*T1*T1/(nn*(mm + nn))
+           cat("nn, mm, T1, T2:", nn, mm, T1, T2,"\n")
+           S[k-1] <- S[k-1] + S[k] + T2
+           T[k-1] <- T[k-1] + T[k]
+           cat("T, S for k-1: ",T[k-1],S[k-1],"\n")
+           # Note could zero the level k entries
+           P[k] <- T[k] <- S[k] <- 0 # not absolutely necessary
+           k <- k - 1
+           showstack(k, P, T, S)
+          tmp <- readline("continue?")
          }
        } else { stop("Stack overflow")}
     }
     # Force collapse of stack now data finished
     while (k > 1) {
-       cat("fcf")
-       k<-combform()
-       showstack()
-       tmp <- readline("cont. collapse")
+        nn <- P[k]
+        mm <- P[k-1]
+        P[k-1] <- nn + mm   
+        T1 <- nn * T[k-1]/mm - T[k]
+        T2 <- mm*T1*T1/(nn*(mm + nn))
+        cat("nn, mm, T1, T2:", nn, mm, T1, T2,"\n")
+        S[k-1] <- S[k-1] + S[k] + T2
+        T[k-1] <- T[k-1] + T[k]
+        cat("T, S for k-1: ",T[k-1],S[k-1],"\n")
+        # Note could zero the level k entries
+        P[k] <- T[k] <- S[k] <- 0 # not absolutely necessary
+        k <- k - 1
+        showstack(k, P, T, S)
+        tmp <- readline("cont. collapse")
     }
     mean <- T[1]/P[1]
     variance <- S[1]/(P[1] - 1)
@@ -128,6 +132,9 @@
 }    
 
   ds <- 1000:1010
-  pairvar(ds)
+  sol<-pairvar(ds)
+  print(sol)
+  mean(ds)
+  var(ds)
   cat("done\n")
   
