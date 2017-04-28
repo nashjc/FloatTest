@@ -6,9 +6,9 @@
 
 # ?? seems stack is not being passed around
 
-pairvar <- function(datasource){
-     maxdepth <- 8 # maximum depth of stack -- handles more than 2^maxdepth observations
-     datapointer <<- 0 # global. Points to next data pointer. Set negative at end.
+pairvar <- function(datasource, trace=FALSE){
+     maxdepth <- 25 # maximum depth of stack -- handles more than 2^maxdepth observations
+     datapointer <- 0 # global. Points to next data pointer. Set negative at end.
      # Note: R does not have long integers, so we could have trouble with very large datasets.
      # Using double can get to 4e15 points, however.
      # actualy sum(i=0:(maxdepth-1)){2^i}
@@ -28,7 +28,7 @@ pairvar <- function(datasource){
        return(1)
      }     
 
-     showstack(k, P, T, S)
+     if (trace) showstack(k, P, T, S)
      
      k <- 0 # stack depth
 
@@ -41,11 +41,11 @@ pairvar <- function(datasource){
        } else {
           x <- datasource[datapointer]
        } 
-       cat("getdatapoint x=",x,"\n")
+       if (trace)   cat("getdatapoint x=",x,"\n")
        x
      }
 
-    cat("start of work with datasource\n") 
+     if (trace) cat("start of work with datasource\n") 
     cat("datapointer = ",datapointer,"\n")
     x  <- getdatapoint(datasource) 
     if (is.na(x)) {
@@ -63,28 +63,28 @@ pairvar <- function(datasource){
       P[2] <- 1
       T[2] <- x
     }
-    showstack(k, P, T, S)
+    if (trace) showstack(k, P, T, S)
     nn <- P[k]
     mm <- P[k-1]
     P[k-1] <- nn + mm   
     T1 <- nn * T[k-1]/mm - T[k]
     T2 <- mm*T1*T1/(nn*(mm + nn))
-    cat("nn, mm, T1, T2:", nn, mm, T1, T2,"\n")
+    if (trace) cat("nn, mm, T1, T2:", nn, mm, T1, T2,"\n")
     S[k-1] <- S[k-1] + S[k] + T2
     T[k-1] <- T[k-1] + T[k]
-    cat("T, S for k-1: ",T[k-1],S[k-1],"\n")
+    if (trace) cat("T, S for k-1: ",T[k-1],S[k-1],"\n")
     # Note could zero the level k entries
     P[k] <- T[k] <- S[k] <- 0 # not absolutely necessary
     k <- k - 1
-    showstack(k, P, T, S)
-    tmp <- readline("above after first 2 points\n")
+    if (trace) showstack(k, P, T, S)
+    if (trace) tmp <- readline("above after first 2 points\n")
     repeat {
        x <- getdatapoint(datasource)
-       cat("datapointer = ",datapointer,"\n")
+       if (trace) cat("datapointer = ",datapointer,"\n")
      #  print(P)
        if (is.na(x)) { break }
        k <- k+1
-       cat("k=",k," after new data\n")
+       if (trace) cat("k=",k," after new data\n")
        if (k <= maxdepth) {
          P[k] <- 1
          T[k] <- x 
@@ -96,19 +96,22 @@ pairvar <- function(datasource){
            P[k-1] <- nn + mm   
            T1 <- nn * T[k-1]/mm - T[k]
            T2 <- mm*T1*T1/(nn*(mm + nn))
-           cat("nn, mm, T1, T2:", nn, mm, T1, T2,"\n")
+           if (trace) cat("nn, mm, T1, T2:", nn, mm, T1, T2,"\n")
            S[k-1] <- S[k-1] + S[k] + T2
            T[k-1] <- T[k-1] + T[k]
-           cat("T, S for k-1: ",T[k-1],S[k-1],"\n")
+           if (trace) cat("T, S for k-1: ",T[k-1],S[k-1],"\n")
            # Note could zero the level k entries
            P[k] <- T[k] <- S[k] <- 0 # not absolutely necessary
            k <- k - 1
-           showstack(k, P, T, S)
-          tmp <- readline("continue?")
+           if (trace)  showstack(k, P, T, S)
+           if (trace) tmp <- readline("continue?")
          }
        } else { stop("Stack overflow")}
+       if ((datapointer %% 1000)==0) showstack(k, P, T, S)
     }
     # Force collapse of stack now data finished
+    cat("Final stack\n")
+    showstack(k, P, T, S)
     while (k > 1) {
         nn <- P[k]
         mm <- P[k-1]
