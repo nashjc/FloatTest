@@ -274,6 +274,26 @@ $$  =  n * (n + 1) / 12 $$
 Since the variance is unaffected by a $shift$, the sequence $(shift + 1) : (shift + n)$
 has mean $shift + (n+1)/2$ and the same variance.
 
+II. Geometric progressions
+
+A geometric progression is the sequence of $n$ 
+numbers $a, a*r, a*r^2, ..., a*r^(n-1)$.
+
+The sum is 
+
+   $$S = a * (1 - r^n)/(1 - r) = a * (r^n - 1)/(r - 1) $$
+
+We note that the squares of the elements of a geometric progression form a
+geometric progression also. Thus we have an analytic formula for both the
+sum and the sum of squares and can apply the "textbook" formula for the 
+variance, namely $ n/(n - 1)$ times the "average of the squares minus the
+square of the average". This approach is NOT (??ref) a good approach for
+computing the variance of an arbitrary series of data, but here we can 
+do the sum algebraically. The result is
+
+?? put in stable approach.
+
+
 # References
 
 

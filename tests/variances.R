@@ -37,34 +37,42 @@
   }
   cat("failed for shift =",shift,"\n")
   
+  mgp <- function(a, r, n) {
+     mean <- a*(r^n - 1)/(n *(r - 1))       
+  }
+  vgp <- function(a, r, n){
+    # Need to check for best method for calculation
+    val <- a*a*(1-r^n)*((1+r^n)/(1+r)-(1-r^n)/(n*(1-r)))/((n-1)*(1-r))
+    val
+  }
+  
+  trygp <- function(a, r, n, forward = TRUE){ ## split out mean and var ??
+      sq <- 0:(n-1) 
+      gp <- a * r^sq
+      if (! forward) gp <- rev(gp)
+      cat("Geometric progression: a=",a,"   r=", r, "   ",n,"elements\n")
+      print(gp)
+      mf <- mgp(a, r, n)
+      mr <- mean(gp)
+      cat("Mean: R", mr,"   formula=",mf,"  diff = ", (mr-mf),"\n" )
+      vf <- vgp(a, r, n)
+      vr <- var(gp)
+      cat("Variance: R", vr,"   formula=",vf,"  diff = ", (vr-vf),"\n" )
+      # return some flags, but for now just 1
+      return (1)
+  }
+  
+  
   cat("geometric progressions\n")
   a <- 1
-  r <- 1.1
-  n <- 100
-  sq <- 0:(n-1)
-  gp <- a*(r^sq)
-  gp
-  sumgp <- a*(1 - r^n)/(1-r)
-  sumgp
-  sum(gp)
-  gp2 <- a*a*(r^(2*sq))
-  gp2
-  sum(gp2)
-  sumgp2 <- a*a*(1 - r^(2*n))/(1 - r*r)
-  sumgp2
-  var(gp) 
-mean(gp)
-sumgp/n
-sum(gp^2)  
-# a*a*(1 - (r^2)^n)/(1-r^2)
-
-vgp <- 2*(r^n-2*r)*a*a*n*(1-r^n)/((n-1)*(1-r*r)*(1+r))
-vgp
-var(gp)
-
-# (r^n + 1)/(r+1) - (r^n-1)/(r-1)
-
-vgp2 <- a*a*(1-r^n)*((1+r^n)/(1+r)-(1-r^n)/(n*(1-r)))/((n-1)*(1-r))
-vgp2
-var(gp)
-# vgp2a <- (a*a*(1-r)/())
+  r <- 2
+  for (nn in 10:50) {
+    cat("Forward ")
+    trygp(a, r, nn)
+    cat("Backward ")
+    trygp(a, r, nn)
+    cat("\n\n")
+    
+  }
+  # ?? need a better summary and diagnostics
+  
