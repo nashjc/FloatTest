@@ -15,8 +15,10 @@ vignette: >
 []:comments put in with the `[]:` tag -- note how we do bold with ** bracketing  _italic_
 
 
-Floating point calculations in any computing language may give results that are very different from 
-results humans expect from arithmetic on real numbers. While in most instances these differences are
+Floating point calculations in any computing language may give results that are very
+different from 
+results humans expect from arithmetic on real numbers. While 
+in most instances these differences are
 inconsequential, there are several cases where they could be important:
    
    - results are changed in ways that will affect outcomes or decisions;
@@ -27,10 +29,12 @@ This article and the accompanying **R** package are intended to provide a struct
 programs that test and report such issues. It is anticipated that this will be open-ended, that is,
 the development of such test codes will be ongoing and react to innovations in software and hardware.
 
-JN: NOTE: We should figure out how we can both TEST and SHOW. I think that for each of the elements we
-show -- which is where RMH work is strong -- we want to have a test. Similarly for each test, we should
-be able to set `show=TRUE` to present the results in lots of detail. Does that seem the right kind of
-objective?
+JN: NOTE: We should figure out how we can both TEST and SHOW. I think that for 
+each of the elements we
+show -- which is where RMH work is strong -- we want to have a test. 
+Similarly for each test, we should
+be able to set `show=TRUE` to present the results in lots of detail. 
+Does that seem the right kind of objective?
 
 # Motivations
 
@@ -54,8 +58,10 @@ objective?
       
    - suggest "best practice" if we can
    
-While this article focuses on **R**, we anticipate that some tests will be ported (if they are not
-already available) to computing languages that **R** may call and which will therefore affect users' results.
+While this article focuses on **R**, we anticipate that some tests will be ported (
+if they are not
+already available) to computing languages that **R** may call and 
+which will therefore affect users' results.
 
 # Background
    - @HH2, particularly Appendix G.
@@ -63,6 +69,7 @@ already available) to computing languages that **R** may call and which will the
    - Gnumeric test xls
    - PARANOIA @RKparanoia
    - @Goldberg:1991
+   - Rounding Errors in Algebraic Processes, @WilkinsonREAP
    
 # Scope
 
@@ -233,4 +240,41 @@ structure.
 **isqrt**: squares of square roots of integers
 
 
+# Appendix A
+
+Some special tests for variance testing.
+
+I. Sequences of integers
+
+The sequence $1:n$ has a sum of 
+
+$$ n * (n + 1)/2 $$
+
+and a sum of squares of 
+ 
+$$ n * (n + 1) * (2 * n + 1)/6 $$
+
+The mean is therefore $ (n + 1) / 2 $ and the variance is
+
+$$  (n / (n - 1)) * ( (n + 1) * (2 * n + 1)/6  - (n + 1) * (n + 1) / 4)  $$ 
+
+which simplifies to 
+
+$$  (n / (n - 1)) * (2 n^2 + 3 n + 1) / 6 - (n^2 + 2 n + 1)/4 ) $$
+
+$$  =  (n / (n - 1)) * (4 n^2 + 6 n + 2  - 3 n^2 - 6 n - 3)/12 $$
+
+
+$$  =  (n/(n - 1)) * (n^2 - 1)/12 $$
+
+$$  =  (n/(n - 1) * (n + 1) * (n - 1) / 12)  $$
+
+$$  =  n * (n + 1) / 12 $$
+
+Since the variance is unaffected by a $shift$, the sequence $(shift + 1) : (shift + n)$
+has mean $shift + (n+1)/2$ and the same variance.
+
 # References
+
+
+Modern computing methods/ National Physical Laboratory (Great Britain) - 2d ed. - London Her Majesty's Stationery Office [1961] - 170 p. illus. 25 cm. - Notes on applied sience; 16 . 
