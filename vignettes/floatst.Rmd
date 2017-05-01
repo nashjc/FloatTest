@@ -38,25 +38,36 @@ Does that seem the right kind of objective?
 
 # Motivations
 
-   - many queries on R-help and elsewhere (e.g., \url{https://stat.ethz.ch/pipermail/r-help/2017-April/446375.html}, 
-   which initiated this particular work)
+This package and vignette arose from a number of considerations:
+
+   - There have been many queries on R-help and elsewhere about "unexpected"
+   computational results. An example posting is
+   \url{https://stat.ethz.ch/pipermail/r-help/2017-April/446375.html}, which initiated
+   this particular work.
    
-   - @FAQ731 is the essential subject of the most frequent R-help postings. ??Can we get numbers?? I suspect that is an interesting R exercise. JN   
+   - The R FAQ section 7.31 (@FAQ731) is the essential subject of the most frequent
+   R-help postings. ??Can we get numbers?? I suspect that is an interesting R exercise.
+   JN   
    
-   - detect changes that could affect results
+   - It would be helpful to detect changes that could affect results of any computations
+   with **R**. In particular, we would like to detecth changes between 
       
-      - versions of R
-      - versions of compilers (Fortran, C, C++, Java, others?)
-      - packages
+      - versions of **R**
+      - versions of compilers used in **R** or packages (**Fortran**,
+      **C**, **C++**, **Java**, or others)
+      - package versions or packages claiming to do the same computations
       
-   - provide guidance
+   - As an adjunct to FAQ section 7.31, we would like to provide guidance about
+   numerical computation, with examples available for user experimentation. In this
+   some objectives are to answer questions such as
       
-      - what is the answer, correct to the working precision
-      - what is the best answer available via a prescribed calculation (assuming all
-      steps are carried out to the best limits)
-      - how different is computed answer from "correct"?; from "best available"?
+      - What is the answer, correct to the working precision?
+      - What is the best answer available via a prescribed calculation (assuming all
+      steps are carried out to the best limits)?
+      - How different is a computed answer from a "correct" result?
+      From the result of the "best available" computational process?
       
-   - suggest "best practice" if we can
+   - We would like to suggest "best practice" if we can.
    
 While this article focuses on **R**, we anticipate that some tests will be ported (
 if they are not
@@ -74,8 +85,10 @@ which will therefore affect users' results.
 # Scope
 
 Because arithmetic affects a large range of computations, it is very easy to allow 
-the scope of tests to become too wide. Here we will categorize the possibilities, 
-but defer the decision of where to draw the line around our tests.
+the scope of tests to become too wide. Here we will categorize the possibilities.
+However, we will defer the decision of where to draw the line around our tests in 
+the expectation that other users of **R** and its packages will raise issues that
+as yet have not attracted our attentio.
 
 ## Core arithmetic
 
@@ -83,21 +96,27 @@ Tests of core arithmetic concern the basic arithmetic capabilities of
 
    - fundamental operations of add, subtract, multiply, and divide on
    the numeric data types in the language. 
-   - input of numeric quantities
-   - output of numeric quantities
+   - the square root (sqrt) function, which is part of the IEEE standard.
+   ?? should we mention ?Arithmetic IEC standard?
+   - the input of numeric quantities
+   - the output of numeric quantities
 
       - for display or printing
       - for reuse in other computations
 
    - those special functions that are "built-in" to some hardware
-   and assumed part of the floating-point arithmetic standards, 
-   namely, ?? need to check exactly which
+   but not part of the floating-point arithmetic standards, 
+      - some form of logarithm
+      - some form of exponential function 
+      - some form of trigonometric function(s)
+      
+Note that $a^b$ may not be supported directly. For example (ref Palmer and ??), the
+Intel 80x87 family of floating point instructions has the instruction 
+F2XM1 that computes $2^x - 1$, and the functions FYL2X and FYL2XP1 which compute
+$ y * log_2(x)$ and $ y * log_2(x + 1)$ respectively. We can combine these
+instructions to compute $a^b$, but need to do so carefully for best results. We
+may also wish to distinguish the case where $b$ is integer.
 
-      - sqrt
-      - log -- NOT part of standard,
-      - power, that is $a^b$, where we may wish to distinguish
-      $b$ integer or not. NOT part of standard
-   
 Note that we consider logical tests on numerical quantities separately
 below, as these raise some issues of programming that need to be addressed.
    
@@ -123,25 +142,37 @@ of specialized arithmetic capabilities:
    computing, random number devices, others?)
    
 Many **R** users are interested in parallel operations, so the first of these categories
-is likely the most important to address first. However, the use of GPUs (so-called Graphical
-Processing Units) is becoming more common. These often have limited precision for storage
-and arithmetic. Very particular tools in the third category will only be considered in the
+is likely the most important to address first. However, the use of GPUs (so-called
+Graphical Processing Units) is becoming more common. These often have 
+limited precision for storage
+and arithmetic. Very particular tools in the third category will only 
+be considered in the
 more distant future, if at all, though others may wish to attempt to port our tests.
    
 ## Special functions within the language
 
-We have already noted log and power functions above. Trigonometric functions are also part of
-the **R** language, and are worth testing as errors can have important implications in real
-life, as they are critical to computing navigational information. (??do we want refs)
+We have already noted trigonometric, log and power functions above. 
+Trigonometric functions are part of the **R** language, and are worth testing 
+as errors can have important implications in real
+life, as they are critical to computing navigational information. (??do we want refs,
+such as Kahan's "Arithmetic written in sand")
+
+What kinds of tests should we consider? In no particular order (??may want to 
+organize later)
 
 - tests of principal range of inverse trigonometric functions. These should be testable fairly easily within **R**.
 
-   xx <- (-40:40)/40
-   xx
-   asin(xx) # check if in -pi/2, pi/2
-   acos(xx) # check if in 0, pi
-   atan(xx) # check if in -pi/2, pi/2
-   
+```{r}
+xx <- (-40:40)/40
+#   xx
+   ss <- asin(xx) # check if in -pi/2, pi/2
+   if (all(ss >= -pi/2) && all(ss <= pi/2)) cat("asin OK") else stop("asin BAD")
+   cc <- acos(xx) # check if in 0, pi
+   if (all(cc >= 0) && all(cc <= pi)) cat("acos OK") else stop("acos BAD")
+   tt <- atan(xx) # check if in -pi/2, pi/2
+   if (all(tt >= -pi/2) && all(tt<= pi/2)) cat("atan OK") else stop("atan BAD")
+```
+      
 - ??similar for hyperbolic functions
 
 - ?? Do we want to consider implications of arithmetic (storage modes) for random number generation. 
@@ -153,12 +184,15 @@ JN suggests no, but keeping a list of potential issues for later consideration.
 
 ## Sums and products
 
-   - variance algorithms
-      - 2 pass
-      - 1 pass
-      - Kahan
-      - other fixes
-      - pairwise
+Sums and products are used for many purposes in computation. They are also prone
+to a number of possible failures when the physical limits of the computational 
+system are exceeded. Such limits include the precision of numbers, the size
+of index quantities and the available memory.
+
+A particular case of sums that is important for statistical computation is that
+of finding the variance of a set of numbers. As that example is long enough to 
+require considerable discussion, we have placed it in a separate section.
+
    - sums and products
       - ordering
       - other strategies
@@ -178,7 +212,8 @@ Concerns:
    - "Fuzz" or equivalent (get ref to Tektronix e.g. Nash 1978)
    - other?
 
-# **R** structures for floating-point operations
+
+# **R** structures for floating-point operations and display
 
   - "+" "-" "*" "/" basic ops
   - "<-"
@@ -207,6 +242,7 @@ processor **Gnumeric** and one of us (JCN) prepared a test spreadsheet `trig.xls
    - need to show bit pattern / hex pattern ??
    - all.equal()
    - identical()
+   - Rmpfr functions ??
 
 
 ## Other useful features of **R** for floating-point testing
@@ -228,6 +264,103 @@ to test this identity for the sequence of integers 0:49. These are established u
 integer input, and verified using the **R** function `str()` to display the object
 structure.
 
+## Computation of means and variances
+
+JN to RMH: Do you think I should do a separate vignette and just extract a
+summary here?
+
+Means and variances are good test cases for arithmetic. 
+
+   - they only involve the four basic arithmetic operations. Even if the
+   standard deviation is desired, the only extra function required is the
+   square root.
+   - it is quite easy to devise cases for which the answer can be computed
+   analytically, that is, by formula NOT requiring a summation
+   - such cases can relatively easily be devised to give rise to errors in
+   standard computational methods
+   - there are many possible algorithms for computing variance.
+   
+### Definitions
+
+We will define the mean of a set of numbers $x(i), i=1,...,n$ as
+
+$$ mean(x) = \sum_{i=1}^n (x_i)/n $$
+
+and variance as
+
+$$ var(x) = \sum_{i=1}^n ( (x_i - mean(x))^2 )/(n - 1) $$
+As far as we can tell, **R** uses essentially this definition (see the code in  R-3.4.0/src/library/stats/src/cov.c). Note that the definition is of the so-called
+**sample** variance where the divisor is $$n - 1$$. A simpler **population** variance
+uses the divisor $n$ and will be called $var_p(x)$. Clearly
+
+$$ var(x) = (n/(n-1)) * var_p(x) $$
+
+
+### Other choices
+
+It is easy to show algebraically that
+
+$$ var_p(x) = \sum_{i=1}^n ( (x_i - mean(x))^2 )/n  = mean(x^2) - (mean(x))^2 $$
+This approach is attractive in that we can do our sum of $x$ and $x^2$ at the 
+same time, which is convenient for long data series or for data arriving as
+a **stream**. The formula, in words "the mean of the square minus the square of
+the mean", is called the **textbook formula**. It has, unfortunately, serious
+computational disadvantages, since we are often forced to subtract nearly equal
+quantities.
+
+Note, however, that subtracting the shift $s$ from all the numbers in our set gives a
+shifted mean
+
+$$ mean(x - s) = mean(x) - s$$
+
+but the variance is unaltered. If we can choose $s$ so that it is close to $mean(x)$,
+then we avoid digit cancellation. The awkward issue is choosing $s$ well. 
+
+The accumulations for both the mean and variance are subject to digit loss errors
+if the current accumulated sum is very large relative to the next element of the
+data. A simple example of this is the addition of 1 cent to a million dollars in
+an 8-digit decimal calculator. \$1,000,000.00 needs **9** digits for precision
+to 1 cent. The addition (without guard digits) loses the penny. 
+
+A better way to do the accumulation is to sort the data and sum from smallest
+to largest. Sorting is a slow operation relative to the summation, and requires
+that our data be stored. As we have noted, some data is received in a stream and
+the whole series is never saved, though we must be able to keep a count of the 
+number of elements so we have $n$.
+
+### Issues to test
+
+From the above, we clearly have three matters of concern:
+
+   - that we have sufficient integer or index precision to hold $n$
+   - that we can avoid digit loss that may occur when accumulating a
+   relatively small data element into a partial sum
+   - that we can avoid digit cancellation in computing the variance
+   in a one-pass method.
+
+The first two concerns here can only be addressed by having data storage
+structures of sufficient precision. For the mean, this may imply an
+extended precision accumulator rather than a universally large number of
+digits for numbers.
+   
+### Variance algorithms
+
+Many methods for computing the variance 
+      - 2 pass method as per the definition
+      - variants on 2-pass to improve the accuracy of the result (??explain)
+      - 1 pass using textbook formula
+      - shifted 1 pass method
+         - Kahan
+      - other fixes
+      - a pairwise or stack approach
+
+### Mean and variance test data
+
+In Appendix A, mathematical formulas for the mean and variance of simple
+sequences of numbers and of geometric progressions are given. Clearly we can
+multiply this data by a scale $q$ or shift it by $s$ to force size or 
+input errors. Moreover, the **R** function `rev()` allows the order of
+the data to be reversed so we can test for digit loss in accumulation.
 
 
 
