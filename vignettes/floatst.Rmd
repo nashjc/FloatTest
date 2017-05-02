@@ -12,8 +12,7 @@ vignette: >
 
 # Abstract
 
-[]:comments put in with the `[]:` tag -- note how we do bold with ** bracketing  _italic_
-
+<!-- comments put in with the html comment tags -- note how we do bold with ** bracketing  _italic_-->
 
 Floating point calculations in any computing language may give results that are very
 different from 
@@ -432,8 +431,9 @@ final formula in a stable manner. One form of the result is
 
 $$(a^2)*(r^(2*n)*((n-1)*r-(n+1))+r^n*2*(r+1)-(n+1)*r+(n-1)) /(n*(n-1)*(r-1)*(r^2 -1))$$
 
+<!-- []: Modern computing methods, National Physical Laboratory (Great Britain) - 2d ed. - London Her Majesty's Stationery Office [1961] - 170 p. illus. 25 cm. - Notes on applied sience; 16 . -->
 
 # References
 
 
-Modern computing methods/ National Physical Laboratory (Great Britain) - 2d ed. - London Her Majesty's Stationery Office [1961] - 170 p. illus. 25 cm. - Notes on applied sience; 16 . 
+
