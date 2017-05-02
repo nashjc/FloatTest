@@ -124,7 +124,7 @@ below, as these raise some issues of programming that need to be addressed.
 The numeric data types in **R** that we shall consider are:
    -- numeric (same as double in R)
    -- integer (??R seems to have just 32 bit integers??)
-   -- ??any others
+   -- ??any others: pracma, gsl, ...
 
 ## Specialized arithmetic
 
@@ -423,13 +423,14 @@ The sum is
 
 We note that the squares of the elements of a geometric progression form a
 geometric progression also. Thus we have an analytic formula for both the
-sum and the sum of squares and can apply the "textbook" formula for the 
+sum and the sum of squares and can apply algebraically rather than 
+computationally the "textbook" formula for the 
 variance, namely $ n/(n - 1)$ times the "average of the squares minus the
-square of the average". This approach is NOT (??ref) a good approach for
-computing the variance of an arbitrary series of data, but here we can 
-do the sum algebraically. The result is
+square of the average". Since we are doing the sum exactly, the textbook
+formula is not problematic, though we should be careful to evaluate the 
+final formula in a stable manner. One form of the result is
 
-?? put in stable approach.
+$$(a^2)*(r^(2*n)*((n-1)*r-(n+1))+r^n*2*(r+1)-(n+1)*r+(n-1)) /(n*(n-1)*(r-1)*(r^2 -1))$$
 
 
 # References

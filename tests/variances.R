@@ -42,7 +42,9 @@
   }
   vgp <- function(a, r, n){
     # Need to check for best method for calculation
-    val <- a*a*(1-r^n)*((1+r^n)/(1+r)-(1-r^n)/(n*(1-r)))/((n-1)*(1-r))
+#    val1 <- a*a*(1-r^n)*((1+r^n)/(1+r)-(1-r^n)/(n*(1-r)))/((n-1)*(1-r))
+    val <- (a^2)*(r^(2*n)*((n-1)*r-(n+1))+r^n*2*(r+1)-(n+1)*r+(n-1))/(n*(n-1)*(r-1)*(r^2 -1))
+#    cat("diff val1-val:", val1-val,"\n")
     val
   }
   
