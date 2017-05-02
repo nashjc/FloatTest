@@ -110,10 +110,11 @@ Tests of core arithmetic concern the basic arithmetic capabilities of
       - some form of exponential function 
       - some form of trigonometric function(s)
       
-Note that $a^b$ may not be supported directly. For example (ref Palmer and ??), the
+Note that $a^b$ may not be supported directly. For example (@Palmer8087 and 
+\url{http://www.cs.dartmouth.edu/~mckeeman/cs48/mxcom/doc/x87.html}), the
 Intel 80x87 family of floating point instructions has the instruction 
 F2XM1 that computes $2^x - 1$, and the functions FYL2X and FYL2XP1 which compute
-$ y * log_2(x)$ and $ y * log_2(x + 1)$ respectively. We can combine these
+$y * log_2(x)$ and $y * log_2(x + 1)$ respectively. We can combine these
 instructions to compute $a^b$, but need to do so carefully for best results. We
 may also wish to distinguish the case where $b$ is integer.
 
