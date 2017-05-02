@@ -178,6 +178,10 @@ xx <- (-40:40)/40
 - ?? Do we want to consider implications of arithmetic (storage modes) for random number generation. 
 JN suggests no, but keeping a list of potential issues for later consideration.
 
+??notes: R: ?Arithmetic  ?groupGeneric
+
+
+
 ## Special functions in packages
 
 ?? What packages generate special functions? Which are worth testing?
