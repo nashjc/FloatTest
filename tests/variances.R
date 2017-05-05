@@ -53,7 +53,7 @@
       gp <- a * r^sq
       if (! forward) gp <- rev(gp)
       cat("Geometric progression: a=",a,"   r=", r, "   ",n,"elements\n")
-      print(gp)
+#      print(gp)
       mf <- mgp(a, r, n)
       mr <- mean(gp)
       cat("Mean: R", mr,"   formula=",mf,"  diff = ", (mr-mf),"\n" )
@@ -61,20 +61,45 @@
       vr <- var(gp)
       cat("Variance: R", vr,"   formula=",vf,"  diff = ", (vr-vf),"\n" )
       # return some flags, but for now just 1
-      return (1)
+      ans <- list(mdif =(mr-mf), vdif=(vr-vf))      
   }
   
   
   cat("geometric progressions\n")
   a <- 1
-  r <- 2
-  for (nn in 10:50) {
-    cat("Forward ")
-    trygp(a, r, nn)
-    cat("Backward ")
-    trygp(a, r, nn)
-    cat("\n\n")
-    
+  rr <- c(1.01, 1.1, 1.2,1,5, 2)
+  iseq <- seq(50, 1000, by=50)
+  mtabf <- matrix(NA, nrow=length(iseq), ncol=length(rr))
+  vtabf <- matrix(NA, nrow=length(iseq), ncol=length(rr))
+  mtabb <- matrix(NA, nrow=length(iseq), ncol=length(rr))
+  vtabb <- matrix(NA, nrow=length(iseq), ncol=length(rr))
+  for (i in 1:length(rr)) {
+    for (jj in 1:length(iseq)) {
+      cat("jj, i", nn, i,"\n")
+      nn <- iseq[jj]
+      r <- rr[i]
+      cat("r = ", r,"\n")
+      cat("Forward ")
+      af <- trygp(a, r, nn)
+      print(af)
+      mtabf[[jj,i]]<-af$mdif
+      vtabf[[jj,i]]<-af$vdif
+      cat("Backward ") # Not backward yet !!
+      ab <- trygp(a, r, nn, forward=FALSE)
+      print(ab)
+      mtabb[[jj,i]]<-ab$mdif
+      vtabb[[jj,i]]<-ab$vdif
+      cat("\n\n")
+    }
   }
-  # ?? need a better summary and diagnostics
+  cat("Mean forward:\n")  
+  print(mtabf)
+  cat("Variance forward:\n")  
+  print(vtabf)
+  cat("Mean backward:\n")
+  print(mtabb)
+  cat("Variance backward:\n")
+  print(vtabb)
+  print(mtabf-mtabb)
+  print(vtabf-vtabb)
   
